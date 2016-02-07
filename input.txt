@@ -1,0 +1,18 @@
+{
+	"":{},
+    "true": true,
+        "null":null,
+            "false": "test 123 true , null false [] {} : ",
+            "A": "test 89:12 ",
+            "Array" : [1, 2,3, "a", true, false, null, []],
+            "Array2" :[],
+            "Value1":1,
+            "Value2":1.23,
+            "Value3":1e+2,
+            "Value4":-1,
+            "\u": "\\",
+            "\"": "\b",
+            "\f": "\n",
+            "\/": "\r",
+            "\/\utf": ""
+            }

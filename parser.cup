@@ -1,0 +1,59 @@
+/*
+   Parser for parsings JSON files
+*/
+
+package cup.example;
+
+import java_cup.runtime.*;
+import cup.example.Lexer;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+
+parser code {:
+  protected Lexer lexer;
+:}
+
+/* define how to connect to the scanner! */
+init with {:
+  ComplexSymbolFactory f = new ComplexSymbolFactory();
+  symbolFactory = f;
+  File file = new File("input.txt");
+  FileInputStream fis = null;
+  try {
+    fis = new FileInputStream(file);
+  } catch (IOException e) {
+    e.printStackTrace();
+  } 
+  lexer = new Lexer(f,fis);
+:};
+scan with {: return lexer.next_token(); :};
+
+/* Terminals (must define all tokens returned by the scanner). */
+terminal QUOTE, LSQ, RSQ, COLON, COMMA, LCURLY, RCURLY, NULL;
+terminal Double    NUMBER;        // our scanner provides numbers as doubles
+terminal String CHAR;
+terminal Boolean TRUE, FALSE;
+
+/* Non terminals */
+
+non terminal object, members, pair, array, elements, value, string, chars, char;
+
+/* The grammar rules for JSON */
+object::= LCURLY members RCURLY | LCURLY RCURLY;
+//object allows for empty parentheses { } and { members }
+members::=  pair | pair COMMA members;
+//members allows a pair, or pair, pair etc - - comma separation of a number of pairs
+pair::= string COLON value;
+// a pair is defined as a string: value
+array ::= LSQ elements RSQ | LSQ RSQ;
+// an array is defined by having square brackets [ ] on the borders- also an empty array is allowed.
+elements  ::= value COMMA elements | value;
+// elements are value or value, value etc - comma separation of a number of values
+value::= NUMBER | string | array | TRUE | FALSE | NULL | object;
+// a value is defined as in the JSON specification.
+string::= QUOTE chars QUOTE | QUOTE QUOTE;
+// a string is contained within quotation marks " - empty string is allowed
+chars::= char chars | char;
+// chars defined as a combination of characters below
+char::= NUMBER | CHAR | COLON | LCURLY | RCURLY | LSQ |RSQ | COMMA | TRUE | FALSE | NULL;
